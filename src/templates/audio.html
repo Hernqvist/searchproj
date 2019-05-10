@@ -1,0 +1,23 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+<div class="container mt-5 p-5 card">
+    <div class="row mb-4">
+        <div class="col-sm text-center">
+            <h1>Shabam</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm text-center">
+            <button id="player" data-action="ready" type="button" class="btn btn-danger btn-circle">
+                <span id="record-icon" class="large-icon oi oi-microphone"></span>
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <h3 id="song-name" class="col-sm text-center mt-4"></h3>
+    </div>
+    
+</div>
+{% endblock %}
