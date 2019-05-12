@@ -13,11 +13,19 @@ navigator.mediaDevices.getUserMedia({ audio: true })
         const req = new XMLHttpRequest;
         req.open('POST', '/audio-upload', true);
         req.onload = function() {
+            if (req.response.length > 200) {
+                req.response = 'No Match';
+            }
             audioChunks = [];
             songName = document.querySelector('#song-name');
             songName.textContent = req.response;
-            if (req.response === 'No Match') {
-                
+            const audioPlayer = document.querySelector('#song-player');
+            if (req.response != 'No Match') {
+                audioPlayer.src = '/static/dataset/' + encodeURI(req.response) + '.mp3';
+                audioPlayer.classList.replace('d-none', 'd-block');
+                audioPlayer.load();
+            } else {
+                audioPlayer.classList.replace('d-block', 'd-none');
             }
         }
         let fd = new FormData();
@@ -39,5 +47,3 @@ navigator.mediaDevices.getUserMedia({ audio: true })
         }
     })
 });
-
-// {{url_for('static', filename='dataset/5 Seconds Of Summer - Youngblood (Alt Version).mp3')}}
