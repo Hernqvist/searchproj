@@ -16,6 +16,9 @@ navigator.mediaDevices.getUserMedia({ audio: true })
             audioChunks = [];
             songName = document.querySelector('#song-name');
             songName.textContent = req.response;
+            if (req.response === 'No Match') {
+                
+            }
         }
         let fd = new FormData();
         fd.append("audio_data", audioBlob, "filename.webm");
@@ -36,3 +39,5 @@ navigator.mediaDevices.getUserMedia({ audio: true })
         }
     })
 });
+
+// {{url_for('static', filename='dataset/5 Seconds Of Summer - Youngblood (Alt Version).mp3')}}

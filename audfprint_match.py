@@ -16,7 +16,7 @@ import scipy.signal
 
 # Don't sweat failure to import graphics support.
 try:
-    import matplotlib.pyplot as plt
+    import matplotlib.pyplot as plt, mpld3
     import librosa.display
 except:
     pass
