@@ -28,7 +28,8 @@ import time
 import numpy as np
 # For wavread fallback.
 import scipy.io.wavfile as wav
-
+from pydub import AudioSegment
+import librosa
 
 try:
     import queue
@@ -42,12 +43,12 @@ except ImportError:
 # *.wav files are supported *and* they must already be resampled to the 
 # system sampling rate (e.g. 11025 Hz).
 
-HAVE_FFMPEG = True
+HAVE_FFMPEG = False
 
-def wavread(filename):
+def wavread(filename,sr=None):
   """Read in audio data from a wav file.  Return d, sr."""
   # Read in wav file.
-  samplerate, wave_data = wav.read(filename)
+  wave_data, samplerate = librosa.load(filename, sr=sr)
   # Normalize short ints to floats in range [-1..1).
   data = np.asfarray(wave_data) / 32768.0
   return data, samplerate
@@ -58,7 +59,16 @@ def audio_read(filename, sr=None, channels=None):
     if HAVE_FFMPEG:
         return audio_read_ffmpeg(filename, sr, channels)
     else:
-        data, samplerate = wavread(filename)
+        if filename.endswith(".mp3"):
+            # convert to wav
+            sound = AudioSegment.from_mp3(filename)
+            sound.export("tmp.wav", format="wav")
+            # make mono channel music
+            sound = AudioSegment.from_wav("tmp.wav")
+            sound = sound.set_channels(1)
+            sound.export("tmp.wav", format="wav")
+            filename="tmp.wav"
+        data, samplerate = wavread(filename, sr)
         if channels == 1 and len(data.shape) == 2 and data.shape[-1] != 1:
             # Convert stereo to mono.
             data = np.mean(data, axis=-1)
