@@ -15,8 +15,9 @@ class AudioAugmentation:
             sound = sound.set_channels(1)
             sound.export("tmp.wav", format="wav")
             filename="tmp.wav"
-        data = librosa.core.load(filename)[0]
-        return data
+        # use None sampling rate to preserve the original one
+        data, sr = librosa.core.load(filename, sr=None)
+        return data, sr
 
     def write_audio_file(self, file, data, sample_rate=16000):
         librosa.output.write_wav(file, data, sample_rate)
@@ -44,18 +45,12 @@ class AudioAugmentation:
 aa = AudioAugmentation()
 
 # Read and show cat sound
-data = aa.read_audio_file(sys.argv[1])
+data, sr = aa.read_audio_file(sys.argv[1])
 
 # Adding noise to sound
-data_noise = aa.add_noise(data)
-
-# Shifting the sound
-data_roll = aa.shift(data)
-
-# Stretching the sound
-data_stretch = aa.stretch(data, 0.8)
+orig_data = np.copy(data)
+data_noise = aa.add_noise(data, sigma=0.0)
+print("MSE", np.sum(np.sqrt(np.square(orig_data - data_noise))))
 
 # Write generated cat sounds
-aa.write_audio_file('output/generated_cat1.wav', data_noise)
-aa.write_audio_file('output/generated_cat2.wav', data_roll)
-aa.write_audio_file('output/generated_cat3.wav', data_stretch)
+aa.write_audio_file('output/generated_cat1.wav', data_noise, sample_rate=sr)
