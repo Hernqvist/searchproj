@@ -28,9 +28,9 @@ class AudioAugmentation:
         plt.plot(np.linspace(0, 1, len(data)), data)
         plt.show()
 
-    def add_noise(self, data):
+    def add_noise(self, data, sigma=0.005):
         noise = np.random.randn(len(data))
-        data_noise = data + 0.005 * noise
+        data_noise = data + sigma * noise
         return data_noise
 
     def shift(self, data):
