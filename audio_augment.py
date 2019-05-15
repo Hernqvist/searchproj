@@ -55,6 +55,11 @@ class AudioAugmentation:
         data_noise = data + noise
         return data_noise
 
+    def pitch_shift(self, sample, octaves=0.0):
+        new_sr = int(sample.frame_rate * (2.0 ** octaves))
+        shifted = sample._spawn(sample.raw_data, overrides={'frame_rate': new_sr})
+        return shifted, new_sr
+
     def shift(self, data):
         return np.roll(data, 1600)
 
