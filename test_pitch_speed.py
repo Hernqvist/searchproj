@@ -12,7 +12,7 @@ import audio_read
 ## change the pitch (which also speeds up/slows down the song)
 bits = 12
 density = 18
-num_files_to_test = 1
+num_files_to_test = 25
 aa = AudioAugmentation()
 octaves = np.array(range(-10, 10))/100
 accuracies = [0] * len(octaves)
