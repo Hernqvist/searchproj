@@ -59,6 +59,7 @@ class HashTable(object):
     def __init__(self, filename=None, hashbits=20, depth=100, maxtime=16384):
         """ allocate an empty hash table of the specified size """
         if filename is not None:
+            self.filename = filename
             self.load(filename)
         else:
             self.hashbits = hashbits

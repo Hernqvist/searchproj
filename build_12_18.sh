@@ -1,0 +1,1 @@
+python audfprint.py -h 12 -n 18 new --dbase databases/b12_d18.pklz songs/*.mp3

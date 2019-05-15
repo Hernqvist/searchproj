@@ -14,7 +14,7 @@ bits = 12
 density = 18
 num_files_to_test = 1
 aa = AudioAugmentation()
-octaves = [-10, -5, 0, 5, 10]
+octaves = np.array(range(-10, 10))/100
 accuracies = [0] * len(octaves)
 
 numfiles = 0

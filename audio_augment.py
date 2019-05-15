@@ -56,6 +56,8 @@ class AudioAugmentation:
         return sound_with_altered_frame_rate.set_frame_rate(data.frame_rate)
 
     def add_noise(self, data, sigma=0.005):
+        if sigma == 0:
+            return data
         noise = np.random.normal(0, sigma, size=data.shape)
         data_noise = data + noise
         return data_noise
