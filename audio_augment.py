@@ -50,6 +50,11 @@ class AudioAugmentation:
     #     plt.plot(np.linspace(0, 1, len(data)), data)
     #     plt.show()
 
+    def speedup(self, data, speed):
+        sound_with_altered_frame_rate = data._spawn(data.raw_data, overrides={
+            "frame_rate": int(data.frame_rate * speed)})
+        return sound_with_altered_frame_rate.set_frame_rate(data.frame_rate)
+
     def add_noise(self, data, sigma=0.005):
         noise = np.random.normal(0, sigma, size=data.shape)
         data_noise = data + noise
