@@ -23,7 +23,7 @@ def audio_upload():
         return 'Dataset has not been indexed'
 
     webmAudio.export(fileName, format="wav")
-    output = str(subprocess.check_output(['python3', 'audfprint.py', 'match', '--dbase', 'fpdbase.pklz', fileName, '--illustrate']))
+    output = str(subprocess.check_output(['python', 'audfprint.py', 'match', '--dbase', 'fpdbase.pklz', fileName, '--illustrate']))
     print(output)
     if (output.find('NOMATCH') != -1):
         return 'No Match'
