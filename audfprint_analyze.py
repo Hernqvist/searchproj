@@ -245,7 +245,7 @@ class Analyzer(object):
             sthresh = a_dec * sthresh
         return peaks
 
-    def find_peaks(self, d, sr):
+    def find_peaks(self, d, sr, return_spectrogram=False):
         """ Find the local peaks in the spectrogram as basis for fingerprints.
             Returns a list of (time_frame, freq_bin) pairs.
 
@@ -298,7 +298,10 @@ class Analyzer(object):
         for col in range(scols):
             for bin_ in np.nonzero(peaks[:, col])[0]:
                 pklist.append((col, bin_))
-        return pklist
+        if return_spectrogram:
+            return pklist, sgram
+        else:
+            return pklist
 
     def peaks2landmarks(self, pklist):
         """ Take a list of local peaks in spectrogram
@@ -335,7 +338,7 @@ class Analyzer(object):
 
         return landmarks
 
-    def wavfile2peaks(self, filename, shifts=None):
+    def wavfile2peaks(self, filename, shifts=None, return_spectrogram=False):
         """ Read a soundfile and return its landmark peaks as a
             list of (time, bin) pairs.  If specified, resample to sr first.
             shifts > 1 causes hashes to be extracted from multiple shifts of
@@ -360,7 +363,10 @@ class Analyzer(object):
             # Store duration in a global because it's hard to handle
             dur = len(d) / sr
             if shifts is None or shifts < 2:
-                peaks = self.find_peaks(d, sr)
+                if return_spectrogram:
+                    peaks, sgram = self.find_peaks(d, sr, return_spectrogram=return_spectrogram)
+                else:
+                    peaks = self.find_peaks(d, sr, return_spectrogram=return_spectrogram)
             else:
                 # Calculate hashes with optional part-frame shifts
                 peaklists = []
@@ -373,7 +379,10 @@ class Analyzer(object):
         self.soundfiledur = dur
         self.soundfiletotaldur += dur
         self.soundfilecount += 1
-        return peaks
+        if return_spectrogram:
+            return peaks, sgram
+        else:
+            return peaks
 
     def wavfile2hashes(self, filename):
         """ Read a soundfile and return its fingerprint hashes as a
