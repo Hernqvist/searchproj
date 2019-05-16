@@ -23,23 +23,23 @@ def audio_upload():
         return 'Dataset has not been indexed'
     webmAudio.export(fileName, format="mp3")
 
-    tryOtherPitches = True
+    tryOtherPitches = False
 
     if tryOtherPitches:
-        output = str(subprocess.check_output(['python', 'audfprint.py', 'match_pitch', '--dbase', 'fpdbase.pklz', fileName, '--illustrate']))
+        output = str(subprocess.check_output(['python3', 'audfprint.py', 'match_pitch', '--dbase', 'databases/database.pklz', fileName, '--illustrate']))
         print(output)
         if (output.find('NOMATCH') != -1):
             return 'No Match'
         else:
             return output
     else:
-        output = str(subprocess.check_output(['python', 'audfprint.py', 'match', '--dbase', 'fpdbase.pklz', fileName, '--illustrate']))
+        output = str(subprocess.check_output(['python3', 'audfprint.py', 'match', '--dbase', 'databases/database.pklz', fileName, '--illustrate']))
         print(output)
         if (output.find('NOMATCH') != -1):
             return 'No Match'
         else:
             sIndex = output.find('dataset/') + 8
-            eIndex = output.find('.mp3')
+            eIndex = output.find('.mp3', sIndex)
             return output[sIndex:eIndex]
 
 if __name__ == '__main__':
