@@ -37,8 +37,8 @@ for sample_length in sample_lengths:
         if match:
           accuracies[j] += 1
       numfiles += 1
-    except:
-      print("something went wrong with file {}, skipped".format(filename))
+    except Exception as e:
+      print("something went wrong with file {}, skipped. Error: {}".format(filename, e))
       continue
 
     if numfiles == num_files_to_test:

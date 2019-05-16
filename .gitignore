@@ -58,3 +58,10 @@ docs/_build/
 fpstats
 fpmstats
 tmp.fpdb
+
+# exclude data files
+dataset/
+fpdbase.pklz
+
+# exclude audio file folder
+audioFiles/

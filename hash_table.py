@@ -59,6 +59,7 @@ class HashTable(object):
     def __init__(self, filename=None, hashbits=20, depth=100, maxtime=16384):
         """ allocate an empty hash table of the specified size """
         if filename is not None:
+            self.filename = filename
             self.load(filename)
         else:
             self.hashbits = hashbits
@@ -206,9 +207,9 @@ class HashTable(object):
         nhashes = sum(self.counts)
         # Report the proportion of dropped hashes (overfull table)
         dropped = nhashes - sum(np.minimum(self.depth, self.counts))
-        print("Read fprints for", sum(n is not None for n in self.names),
-              "files (", nhashes, "hashes) from", name,
-              "(%.2f%% dropped)" % (100.0 * dropped / max(1, nhashes)))
+        #print("Read fprints for", sum(n is not None for n in self.names),
+        #      "files (", nhashes, "hashes) from", name,
+        #      "(%.2f%% dropped)" % (100.0 * dropped / max(1, nhashes)))
 
     def load_pkl(self, name, file_object=None):
         """ Read hash table values from pickle file <name>. """
