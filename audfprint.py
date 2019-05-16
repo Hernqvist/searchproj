@@ -22,6 +22,9 @@ import audfprint_analyze  # The actual analyzer class/code
 import audfprint_match  # Access to match functions, used in command line interface
 import hash_table  # My hash_table implementation
 
+from audio_augment import AudioAugmentation
+from pydub import AudioSegment
+
 
 if sys.version_info[0] >= 3:
     # Python 3 specific definitions
@@ -137,6 +140,36 @@ def make_ht_from_list(analyzer, filelist, hashbits, depth, maxtime, pipe=None):
     else:
         return ht
 
+# Matches a file, trying different pitches within a range.
+# Can be used as a standalone function, it's not neccessary to run the whole
+# script.
+def match_pitch(filename, dbasename, density=18, radius=5, step=1/24):
+    matcher = audfprint_match.Matcher()
+    hash_tab = hash_table.HashTable(dbasename)
+    analyzer = audfprint_analyze.Analyzer()
+    analyzer.density = density
+
+    bestScore = 0
+    bestMatch = "NOMATCH"
+    song = AudioSegment.from_mp3(filename)
+    aa = AudioAugmentation()
+
+    for i in range(-radius, radius+1):
+        # Speed up/slow down the sample
+        octave = i*step
+        shifted, _ = aa.pitch_shift(song, octave)
+        shifted.export("tmp.mp3", format="mp3")
+
+        matches, _, _ = matcher.match_file(analyzer, hash_tab, "tmp.mp3")
+        if len(matches) == 0:
+            continue
+        songid, score = matches[0][:2]
+        songname = hash_tab.names[songid]
+        if score > bestScore:
+            bestScore = score
+            bestMatch = songname
+
+    return bestMatch
 
 def do_cmd(cmd, analyzer, hash_tab, filename_iter, matcher, outdir, type, report, skip_existing=False, strip_prefix=None):
     """ Breaks out the core part of running the command.
@@ -163,6 +196,10 @@ def do_cmd(cmd, analyzer, hash_tab, filename_iter, matcher, outdir, type, report
         for num, filename in enumerate(filename_iter):
             msgs = matcher.file_match_to_msgs(analyzer, hash_tab, filename, num)
             report(msgs)
+
+    elif cmd == 'match_pitch':
+        for num, filename in enumerate(filename_iter):
+            print(match_pitch(filename, hash_tab.filename)) 
 
     elif cmd == 'new' or cmd == 'add':
         # Adding files
@@ -342,7 +379,7 @@ with precomputed fingerprint for each input wav file.
 an existing database; "newmerge" combines existing
 databases to create a new one.
 
-Usage: audfprint (new | add | match | precompute | merge | newmerge | list | remove) [options] [<file>]...
+Usage: audfprint (new | add | match | match_pitch | precompute | merge | newmerge | list | remove) [options] [<file>]...
 
 Options:
   -d <dbase>, --dbase <dbase>     Fingerprint database file
@@ -390,7 +427,7 @@ def main(argv):
 
     # Figure which command was chosen
     poss_cmds = ['new', 'add', 'precompute', 'merge', 'newmerge', 'match',
-                 'list', 'remove']
+                 'match_pitch', 'list', 'remove']
     cmdlist = [cmdname
                for cmdname in poss_cmds
                if args[cmdname]]
@@ -439,8 +476,8 @@ def main(argv):
 
         else:
             # Load existing hash table file (add, match, merge)
-            if args['--verbose']:
-                report([time.ctime() + " Reading hash table " + dbasename])
+            #if args['--verbose']:
+            #    report([time.ctime() + " Reading hash table " + dbasename])
             hash_tab = hash_table.HashTable(dbasename)
             if analyzer and 'samplerate' in hash_tab.params \
                     and hash_tab.params['samplerate'] != analyzer.target_sr:
@@ -454,7 +491,7 @@ def main(argv):
             precomp_type = 'peaks'
 
     # Create a matcher
-    matcher = setup_matcher(args) if cmd == 'match' else None
+    matcher = setup_matcher(args) if cmd in {'match', 'match_pitch'} else None
 
     filename_iter = filename_list_iterator(
             args['<file>'], args['--wavdir'], args['--wavext'], args['--list'])
