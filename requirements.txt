@@ -4,3 +4,4 @@ docopt
 joblib
 psutil
 flask
+tqdm

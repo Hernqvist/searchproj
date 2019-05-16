@@ -1,51 +1,55 @@
 import common
 import subprocess
-import os
+import argparse, sys, os
 from pydub import AudioSegment
-from pydub.exceptions import CouldntDecodeError
-from pydub.effects import speedup
 from audio_augment import AudioAugmentation
 import numpy as np
-import audio_read
 
 ## run test to check how well the algorithm handles re-sapling to
 ## change the pitch (which also speeds up/slows down the song)
-bits = 12
-density = 18
-num_files_to_test = 25
-aa = AudioAugmentation()
-octaves = np.array(range(-10, 10))/100
-accuracies = [0] * len(octaves)
+def main(args):
+  dbase = args.dbase
+  num_files_to_test = int(args.num_files_to_test)
+  source_dir = args.source_dir
+  start_timestep = int(args.start_timestep)
+  sample_length = int(args.sample_length)
+  pitch_range = float(args.pitch_range)
+  pitch_step = float(args.pitch_step)
 
-numfiles = 0
-for filename in os.listdir("songs"):
-  if (filename == ".DS_Store") or (filename == ".DSStore"):
-    continue
-  # try:
-  song = AudioSegment.from_mp3("songs/"+filename)
-  sample = song[40000:55000]  # take a sample from the song
-  for i, octave in enumerate(octaves):
-    shifted, new_sr = aa.pitch_shift(sample, octave)  # re-sample to a different octave
-    # speed = shifted.duration_seconds / sample.duration_seconds
-    # print(speed)
-    # shifted = aa.speedup(shifted, speed)
-    # print("old duration: {:.2f}s, new duration: {:.2f}s, proportion: {:.3f}".format(
-      # sample.duration_seconds, shifted.duration_seconds, shifted.duration_seconds/sample.duration_seconds))
-    new_filename = "sample_{}.mp3".format(i)
-    shifted.export(new_filename, format="mp3")
-    command = "python audfprint.py -h {} -n {} -x 1 match --dbase {} {}".format(
-            bits, density, common.dbasename(bits, density), new_filename)
-    result = subprocess.getoutput(command)
-    match = filename in result
-    print(filename, "octave:", octave, match)
-    if match:
-      accuracies[i] += 1
-  
-  numfiles += 1
-  # except:
-    # print("Something went wrong with file {}, skipping.".format(filename))
+  aa = AudioAugmentation()
+  octaves = np.linspace(-pitch_range, pitch_range, int(2*pitch_range//pitch_step))
+  accuracies = [0] * len(octaves)
 
-  if numfiles == num_files_to_test:
-    break
+  numfiles = 0
+  for filename in os.listdir("songs"):
+    if filename[-4:] == ".mp3": 
+      song = AudioSegment.from_mp3(source_dir+"/"+filename)
+      sample = song[start_timestep:start_timestep+sample_length]  # take a sample from the song
+      for i, octave in enumerate(octaves):
+        shifted, new_sr = aa.pitch_shift(sample, octave)  # re-sample to a different octave
+        shifted.export("sample.mp3", format="mp3")
+        command = "python audfprint.py -h 12 -n 18 -x 1 match --dbase {} sample.mp3".format(dbase)
+        result = subprocess.getoutput(command)
+        match = filename in result
+        print(filename, "octave:", octave, match)
+        if match:
+          accuracies[i] += 1
+      numfiles += 1
 
-print(np.array(accuracies) * 100 / num_files_to_test)
+      if numfiles == num_files_to_test:
+        print(np.array(accuracies) * 100 / numfiles)
+        return
+
+if __name__ == "__main__":
+  parser=argparse.ArgumentParser()
+
+  parser.add_argument('--dbase', help='database file (with .pklz ending)')
+  parser.add_argument('--num_files_to_test', help='how many files to test')
+  parser.add_argument('--source_dir', help='directory where the overlay files are stored')
+  parser.add_argument('--start_timestep', help='timestep to start the sample at (ms)')
+  parser.add_argument('--sample_length', help='length of the sample (ms)')
+  parser.add_argument('--pitch_range', help='test pitches between -pr to +pr')
+  parser.add_argument('--pitch_step', help='test pitches between -pr to +pr with this step')
+
+  args=parser.parse_args()
+  main(args)
