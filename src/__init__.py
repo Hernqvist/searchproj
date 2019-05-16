@@ -30,25 +30,28 @@ def audio_upload():
         if filename.startswith("sgram"): 
             os.remove('./src/static/' + filename)
 
-    if tryOtherPitches:
-        output = str(subprocess.check_output(['python3', 'audfprint.py', 'match_pitch', '--dbase', 'databases/database.pklz', fileName, '--illustrate']))
-        print(output)
-        if (output.find('NOMATCH') != -1):
-            return 'No Match' + ';;'
+    try:
+        if tryOtherPitches:
+            output = str(subprocess.check_output(['python3', 'audfprint.py', 'match_pitch', '--dbase', 'databases/database.pklz', fileName, '--illustrate']))
+            print(output)
+            if (output.find('NOMATCH') != -1):
+                return 'No Match;;'
+            else:
+                return output + ';' + sgramFile
         else:
-            return output + ';' + sgramFile
-    else:
-        output = str(subprocess.check_output(['python3', 'audfprint.py', 'match', '--dbase', 'databases/database.pklz', fileName, '--illustrate']))
-        for filename in os.listdir('./src/static'):
-            if filename.startswith("sgram"): 
-                sgramFile = filename
-        print(output)
-        if (output.find('NOMATCH') != -1):
-            return 'No Match' + ';;'
-        else:
-            sIndex = output.find('songs/') + 6
-            eIndex = output.find('.mp3', sIndex)
-            return output[sIndex:eIndex] + ';' + sgramFile
+            output = str(subprocess.check_output(['python3', 'audfprint.py', 'match', '--dbase', 'databases/database.pklz', fileName, '--illustrate']))
+            for filename in os.listdir('./src/static'):
+                if filename.startswith("sgram"): 
+                    sgramFile = filename
+            print(output)
+            if (output.find('NOMATCH') != -1):
+                return 'No Match' + ';;'
+            else:
+                sIndex = output.find('songs/') + 6
+                eIndex = output.find('.mp3', sIndex)
+                return output[sIndex:eIndex] + ';' + sgramFile
+    except:
+        return 'No Match;;'
 
 if __name__ == '__main__':
     app.run(debug=True)
