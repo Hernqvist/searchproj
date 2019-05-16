@@ -1,5 +1,45 @@
-audfprint
+Shabam
 =========
+
+Interactive audio fingerprinting based on the Shazam algorithm.
+For installation, run 
+
+    pip3 install -r requirements.txt
+
+in the root directory of the project.
+
+The repository contains the following main components:
+
+# shabam website
+
+The code for the interactive shabam webapp is located in the **src** directory. In order to run the app, execute
+
+    python3 src/__init__.py
+
+This starts a *flask* webservice on port 5000 that can be accessed under the following address:
+
+    127.0.0.1:5000
+
+Required dependencies:
+
+  - flask
+  - pydub
+
+# shabam utilities
+
+There are several utility scripts that help users to perform operations on their audio data, and to evaluate the quality of the Shazam algorithm in different circumstances.
+
+- *test_noise.py* Experiment that applies different gaussian distributed noise with different variances to the music data and compares the accuracy of the Shazam algorithm on different variance levels.
+- *test_overlay.py* Experiment that evaluates the recoginition rate of two overlaid songs. It shows that the Shazam algorithm can not be confused in this setting and always detects at least one of the songs, often even both.
+- *test_parameters.py* Experiment that runs grid search to find suitable values for the bits per hash and the number of hashes computed in every second of music.
+- *test_pitch_speed.py* Experiment that changes the pitch of music files and measures how well the music can be identified by the Shazam algorithm in this setting.
+- *rename_songs.py* Copies all music files located in one directory and copies them to another directory and removes artifacts like "(music video)" from the filenames.
+- *overlay.py* Utility script that overlays one particular song with all songs that are located in another directory.
+
+# audfprint
+
+Our algorithm is based on the audfprint repository (https://github.com/dpwe/audfprint). Follow the descriptions below to run the *audfprint* program.
+
 
 Landmark-based audio fingerprinting.
 
