@@ -29,7 +29,7 @@ for sample_length in sample_lengths:
       for j, sigma in enumerate(sigmas):
         noisy_sample = aa.add_noise(sample, sigma) # apply gaussian noise
         aa.write("sample.mp3", sr, noisy_sample)
-        command = "python audfprint.py -h {} -n {} -x 1 match --dbase {} sample.mp3".format(
+        command = "python3 audfprint.py -h {} -n {} -x 1 match --dbase {} sample.mp3".format(
           bits, density, common.dbasename(bits, density))
         result = subprocess.getoutput(command)
         match = filename in result

@@ -13,19 +13,30 @@ navigator.mediaDevices.getUserMedia({ audio: true })
         const req = new XMLHttpRequest;
         req.open('POST', '/audio-upload', true);
         req.onload = function() {
-            if (req.response.length > 200) {
+            console.log(req.response)
+            if (req.response.length > 100) {
                 req.response = 'No Match';
             }
             audioChunks = [];
             songName = document.querySelector('#song-name');
-            songName.textContent = req.response;
-            const audioPlayer = document.querySelector('#song-player');
-            if (req.response != 'No Match') {
-                audioPlayer.src = '/static/dataset/' + encodeURI(req.response) + '.mp3';
-                audioPlayer.classList.replace('d-none', 'd-block');
+
+            song = req.response.substring(0, req.response.search(';'));
+            sgramFile = req.response.substring(req.response.search(';') + 1, req.response.length);
+            songName.textContent = song;
+
+            const audioContainer = document.querySelector('#audio-container');
+            const sgramContainer = document.querySelector('#sgram-container');
+            const audioPlayer = document.querySelector('#audio-player');
+            const sgramImage = document.querySelector('#sgram-image');
+            if (!req.response.includes('No Match')) {
+                audioPlayer.src = '/static/songs/' + encodeURI(song) + '.mp3';
+                sgramImage.src = '/static/' + sgramFile;
                 audioPlayer.load();
+                audioContainer.classList.remove('d-none');
+                sgramContainer.classList.remove('d-none');
             } else {
-                audioPlayer.classList.replace('d-block', 'd-none');
+                audioContainer.classList.add('d-none');
+                sgramContainer.classList.add('d-none');
             }
         }
         let fd = new FormData();

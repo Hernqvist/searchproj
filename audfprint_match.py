@@ -15,15 +15,18 @@ import numpy as np
 import scipy.signal
 
 # Don't sweat failure to import graphics support.
-try:
-    import matplotlib.pyplot as plt, mpld3
-    import librosa.display
-except:
-    pass
+# try:
+import matplotlib.pyplot as plt, mpld3
+import librosa.display
+
+import uuid
+# except:
+#     pass
 
 import audfprint_analyze  # for localtest and illustrate
 import audio_read
 import stft
+# import librosa
 
 def process_info():
     rss = usrtime = 0
@@ -396,24 +399,28 @@ class Matcher(object):
             else:
                 msgrslt.append(qrymsg + "\t")
         else:
+            seen_ids = []
             for (tophitid, nhashaligned, aligntime, nhashraw, rank,
                  min_time, max_time) in rslts:
-                # figure the number of raw and aligned matches for top hit
-                if self.verbose:
-                    if self.find_time_range:
-                        msg = ("Matched {:6.1f} s starting at {:6.1f} s in {:s}"
-                               " to time {:6.1f} s in {:s}").format(
-                                (max_time - min_time) * t_hop, min_time * t_hop, qry,
-                                (min_time + aligntime) * t_hop, ht.names[tophitid])
+                # only add song to results if it's not already there (avoid multiple matches of the same song)
+                if not tophitid in seen_ids:
+                    # figure the number of raw and aligned matches for top hit
+                    if self.verbose:
+                        if self.find_time_range:
+                            msg = ("Matched {:6.1f} s starting at {:6.1f} s in {:s}"
+                                   " to time {:6.1f} s in {:s}").format(
+                                    (max_time - min_time) * t_hop, min_time * t_hop, qry,
+                                    (min_time + aligntime) * t_hop, ht.names[tophitid])
+                        else:
+                            msg = "Matched {:s} as {:s} at {:6.1f} s".format(
+                                    qrymsg, ht.names[tophitid], aligntime * t_hop)
+                        msg += (" with {:5d} of {:5d} common hashes"
+                                " at rank {:2d}").format(
+                                nhashaligned, nhashraw, rank)
+                        msgrslt.append(msg)
                     else:
-                        msg = "Matched {:s} as {:s} at {:6.1f} s".format(
-                                qrymsg, ht.names[tophitid], aligntime * t_hop)
-                    msg += (" with {:5d} of {:5d} common hashes"
-                            " at rank {:2d}").format(
-                            nhashaligned, nhashraw, rank)
-                    msgrslt.append(msg)
-                else:
-                    msgrslt.append(qrymsg + "\t" + ht.names[tophitid])
+                        msgrslt.append(qrymsg + "\t" + ht.names[tophitid])
+                seen_ids.append(tophitid)
                 if self.illustrate:
                     self.illustrate_match(analyzer, ht, qry)
         return msgrslt
@@ -458,11 +465,10 @@ class Matcher(object):
                  np.array([[x[1], x[2]] for x in mlms]).T,
                  '.-r')
         # Add title
-        plt.title(filename + " : Matched as " + ht.names[results[0][0]]
-                  + (" with %d of %d hashes" % (len(matchhashes),
-                                                len(q_hashes))))
+        plt.title("Matched as " + ht.names[results[0][0]].split("/")[1].split(".")[0])
         # Display
-        plt.show()
+        plt.savefig("./src/static/sgram" + uuid.uuid4().hex + ".png", bbox_inces="tight")
+        # plt.show()
         # Return
         return results
 
