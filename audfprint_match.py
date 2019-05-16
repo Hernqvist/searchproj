@@ -18,6 +18,8 @@ import scipy.signal
 # try:
 import matplotlib.pyplot as plt, mpld3
 import librosa.display
+
+import uuid
 # except:
 #     pass
 
@@ -465,7 +467,7 @@ class Matcher(object):
         # Add title
         plt.title("Matched as " + ht.names[results[0][0]].split("/")[1].split(".")[0])
         # Display
-        plt.savefig("sgram.png", bbox_inces="tight")
+        plt.savefig("./src/static/sgram" + uuid.uuid4().hex + ".png", bbox_inces="tight")
         # plt.show()
         # Return
         return results
