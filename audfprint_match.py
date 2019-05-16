@@ -15,15 +15,16 @@ import numpy as np
 import scipy.signal
 
 # Don't sweat failure to import graphics support.
-try:
-    import matplotlib.pyplot as plt, mpld3
-    import librosa.display
-except:
-    pass
+# try:
+import matplotlib.pyplot as plt, mpld3
+import librosa.display
+# except:
+#     pass
 
 import audfprint_analyze  # for localtest and illustrate
 import audio_read
 import stft
+# import librosa
 
 def process_info():
     rss = usrtime = 0
@@ -99,7 +100,7 @@ class Matcher(object):
         # Absolute minimum number of matching hashes to count as a match
         self.threshcount = 5
         # How many hits to return?
-        self.max_returns = 1
+        self.max_returns = 2
         # How deep to search in return list?
         self.search_depth = 100
         # Sort those returns by time (instead of counts)?
@@ -458,11 +459,10 @@ class Matcher(object):
                  np.array([[x[1], x[2]] for x in mlms]).T,
                  '.-r')
         # Add title
-        plt.title(filename + " : Matched as " + ht.names[results[0][0]]
-                  + (" with %d of %d hashes" % (len(matchhashes),
-                                                len(q_hashes))))
+        plt.title("Matched as " + ht.names[results[0][0]].split("/")[1].split(".")[0])
         # Display
-        plt.show()
+        plt.savefig("sgram.png", bbox_inces="tight")
+        # plt.show()
         # Return
         return results
 
