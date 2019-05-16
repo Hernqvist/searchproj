@@ -38,6 +38,8 @@ There are several utility scripts that help users to perform operations on their
 
 # audfprint
 
+Our algorithm is based on the audfprint repository (https://github.com/dpwe/audfprint). Follow the descriptions below to run the *audfprint* program.
+
 
 Landmark-based audio fingerprinting.
 
