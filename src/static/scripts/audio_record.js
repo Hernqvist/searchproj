@@ -23,11 +23,11 @@ navigator.mediaDevices.getUserMedia({ audio: true })
             const audioContainer = document.querySelector('#audio-container');
             const audioPlayer = document.querySelector('#audio-player');
             if (req.response != 'No Match') {
-                audioPlayer.src = '/static/dataset/' + encodeURI(req.response) + '.mp3';
+                audioPlayer.src = '/static/songs/' + encodeURI(req.response) + '.mp3';
                 audioPlayer.load();
-                audioContainer.classList.replace('d-none', 'd-block');
+                audioContainer.classList.remove('d-none');
             } else {
-                audioContainer.classList.replace('d-block', 'd-none');
+                audioContainer.classList.add('d-none');
             }
         }
         let fd = new FormData();
