@@ -1,55 +1,41 @@
-import common
 import subprocess
-import os
+import argparse, sys, os
 from pydub import AudioSegment
-from pydub.exceptions import CouldntDecodeError
-from pydub.effects import speedup
-from audio_augment import AudioAugmentation
-import numpy as np
-import audio_read
 
-## run test to check how well the algorithm handles re-sapling to
-## change the pitch (which also speeds up/slows down the song)
-bits = 12
-density = 18
-num_files_to_test = 50
-aa = AudioAugmentation()
-two_matches = 0
-only_africa = 0
-only_other = 0
-no_matches = 0
+## run test to check how well the algorithm recognises two songs playing 
+## simultaneously (print out the returned results, one of which is Africa)
+def main(args):
+  dbase = args.dbase
+  num_files_to_test = int(args.num_files_to_test)
+  source_dir = args.source_dir
+  start_timestep = int(args.start_timestep)
+  sample_length = int(args.sample_length)
 
-numfiles = 0
-for filename in os.listdir("combined"):
-  if (filename == ".DS_Store") or (filename == ".DSStore"):
-    continue
+  numfiles = 0
+  for filename in os.listdir(source_dir):
+    if filename[-4:] == ".mp3":  # currently only accepts .mp3
+      print(filename)
+      song = AudioSegment.from_mp3(source_dir+"/"+filename)
+      sample = song[start_timestep:start_timestep+sample_length]  # take a sample from the song
+      sample.export("sample.mp3", format="mp3")
+      command = "python audfprint.py -h 12 -n 18 -x 2 match --dbase {} sample.mp3".format(dbase)
+      result = subprocess.getoutput(command)
+      print(result)
+      numfiles += 1
+      if numfiles == num_files_to_test:
+        print("finished!")
+        return
+    else:
+      continue
 
-  temp = filename.split("_")[1]
-  print(temp)
-  song = AudioSegment.from_mp3("combined/"+filename)
-  sample = song[60000:75000]  # take a sample from the song
-  sample.export("sample.mp3", format="mp3")
-  command = "python audfprint.py -h {} -n {} -x 2 match --dbase {} sample.mp3".format(
-        bits, density, common.dbasename(bits, density))
-  result = subprocess.getoutput(command)
-  print(result)
-  if ("Toto - Africa" in result) and (temp[:4] in result):
-    print("TWO MATCHES")
-    two_matches += 1
-  elif ("Toto - Africa" in result):
-    only_africa += 1
-    print("AFRICA")
-  elif (temp[:4] in result):
-    only_other += 1
-    print("OTHER")
-  else:
-    print("NO MATCHES")
-    no_matches += 1
+if __name__ == "__main__":
+  parser=argparse.ArgumentParser()
 
-  print(two_matches, only_africa, only_other, no_matches)
-  numfiles += 1
-  # except:
-    # print("Something went wrong with file {}, skipping.".format(filename))
+  parser.add_argument('--dbase', help='database file (with .pklz ending)')
+  parser.add_argument('--num_files_to_test', help='how many files to test')
+  parser.add_argument('--source_dir', help='directory where the overlay files are stored')
+  parser.add_argument('--start_timestep', help='timestep to start the sample at (ms)')
+  parser.add_argument('--sample_length', help='length of the sample (ms)')
 
-  if numfiles == num_files_to_test:
-    break
+  args=parser.parse_args()
+  main(args)
