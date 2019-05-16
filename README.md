@@ -20,6 +20,13 @@ Required dependencies:
   - flask
   - pydub
 
+# shabam utilities
+
+There are several utility scripts that help users to perform operations on their audio data, and to evaluate the quality of the Shazam algorithm in different circumstances.
+
+- *test_parameters.py*
+- *test_pitch_speed.py*
+- *test_noise.py*
 
 # audfprint
 
