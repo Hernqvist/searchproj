@@ -14,20 +14,29 @@ navigator.mediaDevices.getUserMedia({ audio: true })
         req.open('POST', '/audio-upload', true);
         req.onload = function() {
             console.log(req.response)
-            if (req.response.length > 200) {
+            if (req.response.length > 100) {
                 req.response = 'No Match';
             }
             audioChunks = [];
             songName = document.querySelector('#song-name');
-            songName.textContent = req.response;
+
+            song = req.response.substring(0, req.response.search(';'));
+            sgramFile = req.response.substring(req.response.search(';') + 1, req.response.length);
+            songName.textContent = song;
+
             const audioContainer = document.querySelector('#audio-container');
+            const sgramContainer = document.querySelector('#sgram-container');
             const audioPlayer = document.querySelector('#audio-player');
-            if (req.response != 'No Match') {
-                audioPlayer.src = '/static/songs/' + encodeURI(req.response) + '.mp3';
+            const sgramImage = document.querySelector('#sgram-image');
+            if (!req.response.includes('No Match')) {
+                audioPlayer.src = '/static/songs/' + encodeURI(song) + '.mp3';
+                sgramImage.src = '/static/' + sgramFile;
                 audioPlayer.load();
                 audioContainer.classList.remove('d-none');
+                sgramContainer.classList.remove('d-none');
             } else {
                 audioContainer.classList.add('d-none');
+                sgramContainer.classList.add('d-none');
             }
         }
         let fd = new FormData();
