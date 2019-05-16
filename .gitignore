@@ -65,3 +65,5 @@ fpdbase.pklz
 
 # exclude audio file folder
 audioFiles/
+
+songs.txt
