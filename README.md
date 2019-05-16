@@ -20,11 +20,6 @@ This starts a *flask* webservice on port 5000 that can be accessed under the fol
 
     127.0.0.1:5000
 
-Required dependencies:
-
-  - flask
-  - pydub
-
 # shabam utilities
 
 There are several utility scripts that help users to perform operations on their audio data, and to evaluate the quality of the Shazam algorithm in different circumstances.
