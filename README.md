@@ -2,6 +2,11 @@ Shabam
 =========
 
 Interactive audio fingerprinting based on the Shazam algorithm.
+For installation, run 
+
+    pip3 install -r requirements.txt
+
+in the root directory of the project.
 
 The repository contains the following main components:
 
@@ -27,6 +32,7 @@ There are several utility scripts that help users to perform operations on their
 - *test_parameters.py*
 - *test_pitch_speed.py*
 - *test_noise.py*
+- *rename_songs.py* Copies all music files located in one directory and copies them to another directory and removes artifacts like "(music video)" from the filenames.
 
 # audfprint
 
