@@ -1,5 +1,28 @@
-audfprint
+Shabam
 =========
+
+Interactive audio fingerprinting based on the Shazam algorithm.
+
+The repository contains the following main components:
+
+# shabam website
+
+The code for the interactive shabam webapp is located in the **src** directory. In order to run the app, execute
+
+    python3 src/__init__.py
+
+This starts a *flask* webservice on port 5000 that can be accessed under the following address:
+
+    127.0.0.1:5000
+
+Required dependencies:
+
+  - flask
+  - pydub
+
+
+# audfprint
+
 
 Landmark-based audio fingerprinting.
 
