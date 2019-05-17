@@ -102,7 +102,7 @@ class Matcher(object):
         # Absolute minimum number of matching hashes to count as a match
         self.threshcount = 5
         # How many hits to return?
-        self.max_returns = 2
+        self.max_returns = 1
         # How deep to search in return list?
         self.search_depth = 100
         # Sort those returns by time (instead of counts)?
