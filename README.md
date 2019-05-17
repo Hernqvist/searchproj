@@ -31,6 +31,7 @@ There are several utility scripts that help users to perform operations on their
 - *rename_songs.py* Copies all music files located in one directory and copies them to another directory and removes artifacts like "(music video)" from the filenames.
 - *overlay.py* Utility script that overlays one particular song with all songs that are located in another directory.
 - *audio_noise_creator* Enables to add noise to audio files. Results are saved to disk so that the user can experience a noisy song.
+- *audio_pitch_creator* Enables the user to shift the pitch of a sound file. The results are saved to disk, such that the user can listen to the manipulated songs.
 - *plotting.py* Enables to plot the spectrogram of an audiofile. The constellation map information for the spectrogram is provided in a spearate plot. This script is particularly useful when comparing the quality of original music files with distorted ones.
 
 # audfprint
