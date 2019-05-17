@@ -143,7 +143,7 @@ def make_ht_from_list(analyzer, filelist, hashbits, depth, maxtime, pipe=None):
 # Matches a file, trying different pitches within a range.
 # Can be used as a standalone function, it's not neccessary to run the whole
 # script.
-def match_pitch(filename, dbasename, density=18, radius=5, step=1/24):
+def match_pitch(filename, dbasename, density=18, radius=1, step=1/20):
     matcher = audfprint_match.Matcher()
     hash_tab = hash_table.HashTable(dbasename)
     analyzer = audfprint_analyze.Analyzer()
@@ -156,11 +156,12 @@ def match_pitch(filename, dbasename, density=18, radius=5, step=1/24):
 
     for i in range(-radius, radius+1):
         # Speed up/slow down the sample
-        octave = i*step
-        shifted, _ = aa.pitch_shift(song, octave)
-        shifted.export("tmp.mp3", format="mp3")
+        if i != 0:
+            octave = i*step
+            shifted, _ = aa.pitch_shift(song, octave)
+            shifted.export("tmp.mp3", format="mp3")
 
-        matches, _, _ = matcher.match_file(analyzer, hash_tab, "tmp.mp3")
+        matches, _, _ = matcher.match_file(analyzer, hash_tab, "tmp.mp3" if not i == 0 else filename )
         if len(matches) == 0:
             continue
         songid, score = matches[0][:2]
